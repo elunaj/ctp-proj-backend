@@ -7,7 +7,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 
 const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
+const analysisRouter = require('./routes/analysis');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -22,7 +22,7 @@ app.use(bodyParser.json());
 
 // routes
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/analysis', analysisRouter);
 
 // port
 app.listen(PORT, () => {
