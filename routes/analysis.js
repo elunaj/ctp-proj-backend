@@ -23,7 +23,7 @@ router.post('/', (req, res) => {
 
     toneAnalyzer.tone(toneParams)
     	.then(toneAnalysis => {
-    		res.json(toneAnalysis.result)
+    		res.json(toneAnalysis.result.document_tone);
     	})
     	.catch(err => {
     		console.log(err);
