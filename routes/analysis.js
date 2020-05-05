@@ -48,8 +48,14 @@ const findGenres = (toneAnalysis, res) => {
     //grab map with emotion to genre mapping
     const map = require('../tone-genre-map/map').map; 
 
+    console.log(toneAnalysis)
     //grabs overall document tone
-    const tone = toneAnalysis.result.document_tone.tones[0].tone_id;
+
+    if (toneAnalysis.result.document_tone.tones.length === 0) {
+        return res.status(400).send("error");
+    } else {
+        const tone = toneAnalysis.result.document_tone.tones[0].tone_id;
+    }
 
     //grab array of genre ids from map
     const genreArray = map.get(tone);
