@@ -46,16 +46,16 @@ router.post('/', (req, res) => {
 const findGenres = (toneAnalysis, res) => {
 
     //grab map with emotion to genre mapping
-    const map = require('../tone-genre-map/map').map; 
+    const map = require('../tone-genre-map/map').map;
 
-    console.log(toneAnalysis)
+    console.log(toneAnalysis.result.document_tone.tones);
     //grabs overall document tone
 
     if (toneAnalysis.result.document_tone.tones.length === 0) {
-        return res.status(400).send("error");
-    } else {
-        const tone = toneAnalysis.result.document_tone.tones[0].tone_id;
+        res.status(400).json("error");
     }
+
+    const tone = toneAnalysis.result.document_tone.tones[0].tone_id;
 
     //grab array of genre ids from map
     const genreArray = map.get(tone);
