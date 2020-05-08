@@ -10,7 +10,6 @@ router.post('/', (req, res) => {
     //user input
 	const { text } = req.body;
 
-
     //SDK to connect to IBM-WATSON API
     //taken from: https://medium.com/@mgordoncarneal/create-a-tone-analyzer-using-node-js-and-ibms-watson-ab440c5d2a74
     //we pass three credentials into toneAnalyzer object/tool to gain access
@@ -33,11 +32,16 @@ router.post('/', (req, res) => {
     //fetch tone analysis
     toneAnalyzer.tone(toneParams)
     	.then(toneAnalysis => {
-            findGenres(toneAnalysis, res);
+
+            if (toneAnalysis.result.document_tone.tones.length) {
+                findGenres(toneAnalysis, res);
+            } else {
+                res.status(400).json("tone not found");
+            }
+            
     	})
     	.catch(err => {
-    		console.log(err);
-            // add status error codes/messages**
+    		res.status(400).json("bad request");
     	})
 
 });
@@ -51,10 +55,6 @@ const findGenres = (toneAnalysis, res) => {
     console.log(toneAnalysis.result.document_tone.tones);
     //grabs overall document tone
 
-    if (toneAnalysis.result.document_tone.tones.length === 0) {
-        res.status(400).json("error");
-    }
-
     const tone = toneAnalysis.result.document_tone.tones[0].tone_id;
 
     //grab array of genre ids from map
@@ -63,24 +63,21 @@ const findGenres = (toneAnalysis, res) => {
     //grab a random genre id from our pre-defined emotion-genre map
     const genreId = genreArray[Math.floor(Math.random() * genreArray.length)];
 
-    //add error checks here **
-
     //call findMovies function with genreId and res object
-    findMovies(genreId, res);
+    findMovies(genreId, res, tone);
 }
 
 //finds movies using genreId from findGenres function
-const findMovies = (genreId, res) => {
+const findMovies = (genreId, res, tone) => {
 
     //fetch array of movies from Movie DB API using genreId variable
     axios.get('https://api.themoviedb.org/3/discover/movie?' +
         'api_key=' + process.env.MOVIE_DB_API_KEY + '&language=en-' +
         'US&sort_by=popularity.desc&page=1&with_genres=' + genreId)
         .then(response => {
-            res.status(200).json(response.data);
+            res.status(200).json({response: response.data, tone: tone});
         })
         .catch(err => console.log(err));
-        //add status error codes/messages**
 }
 
 module.exports = router;
