@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 
 const indexRouter = require('./routes/index');
 const analysisRouter = require('./routes/analysis');
+const showRouter = require('./routes/show');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -23,6 +24,7 @@ app.use(bodyParser.json());
 // routes
 app.use('/', indexRouter);
 app.use('/analysis', analysisRouter);
+app.use('/show', showRouter);
 
 // port
 app.listen(PORT, () => {
