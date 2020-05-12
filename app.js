@@ -6,7 +6,6 @@ const logger = require('morgan');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 
-const indexRouter = require('./routes/index');
 const analysisRouter = require('./routes/analysis');
 const showRouter = require('./routes/show');
 
@@ -22,7 +21,6 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // routes
-app.use('/', indexRouter);
 app.use('/analysis', analysisRouter);
 app.use('/show', showRouter);
 
