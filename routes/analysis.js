@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const ToneAnalyzerV3 = require('ibm-watson/tone-analyzer/v3');
 const { IamAuthenticator } = require('ibm-watson/auth');
-const axios = require('axios');
 
 //analysis route, takes user text and finds tone analysis
 router.post('/', (req, res) => {
@@ -34,7 +33,11 @@ router.post('/', (req, res) => {
     	.then(toneAnalysis => {
 
             if (toneAnalysis.result.document_tone.tones.length) {
-                findGenres(toneAnalysis, res);
+
+                const findGenres = require('../middleware/find-genre').findGenres;
+                const findMovies = require('../middleware/find-movie').findMovies;
+                findGenres(toneAnalysis, res, findMovies);
+
             } else {
                 res.status(400).json("tone not found");
             }
@@ -46,38 +49,5 @@ router.post('/', (req, res) => {
 
 });
 
-// Finds Movie DB API genre id
-const findGenres = (toneAnalysis, res) => {
-
-    //grab map with emotion to genre mapping
-    const map = require('../tone-genre-map/map').map;
-
-    console.log(toneAnalysis.result.document_tone.tones);
-    //grabs overall document tone
-
-    const tone = toneAnalysis.result.document_tone.tones[0].tone_id;
-
-    //grab array of genre ids from map
-    const genreArray = map.get(tone);
-
-    //grab a random genre id from our pre-defined emotion-genre map
-    const genreId = genreArray[Math.floor(Math.random() * genreArray.length)];
-
-    //call findMovies function with genreId and res object
-    findMovies(genreId, res, tone);
-}
-
-//finds movies using genreId from findGenres function
-const findMovies = (genreId, res, tone) => {
-
-    //fetch array of movies from Movie DB API using genreId variable
-    axios.get('https://api.themoviedb.org/3/discover/movie?' +
-        'api_key=' + process.env.MOVIE_DB_API_KEY + '&language=en-' +
-        'US&sort_by=popularity.desc&page=1&with_genres=' + genreId)
-        .then(response => {
-            res.status(200).json({response: response.data, tone: tone});
-        })
-        .catch(err => console.log(err));
-}
 
 module.exports = router;
