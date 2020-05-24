@@ -34,4 +34,20 @@ router.get('/:tone', (req, res) => {
         })
 });
 
+// tv show details route handler
+router.get('/tv-details/:id', (req, res) => {
+
+    const { id } = req.params;
+
+    //fetch array of tv show episodes from Movie DB API using genreId variable
+    axios.get(`https://api.themoviedb.org/3/tv/${id}?api_key=${process.env.MOVIE_DB_API_KEY}&append_to_response=videos,credits`)
+        .then(response => {
+            res.status(200).json({response: response.data});
+        })
+        .catch(err => {
+            res.status(404).json("not found");
+        });
+
+});
+
 module.exports = router;
