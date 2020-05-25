@@ -26,6 +26,11 @@ app.use('/analysis', analysisRouter);
 app.use('/show', showRouter);
 app.use('/tv', tvRouter);
 
+//root
+app.get('/', (req, res) => {
+ 	res.json("Root!");
+});
+
 // port
 app.listen(PORT, () => {
   console.log(`App listening on port: ${PORT}`);
