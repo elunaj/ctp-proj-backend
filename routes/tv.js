@@ -22,10 +22,17 @@ router.get('/:tone', (req, res) => {
     //grab a random genre id from our pre-defined emotion-genre map
     const genreId = genreArray[Math.floor(Math.random() * genreArray.length)];
 
+    //create an array of numbers that corresponds to page number
+    //from Movie DB API results
+    let pageArray = [1, 2];
+
+    //Randomly choose a page from Movie DB API results
+    const page = pageArray[Math.floor(Math.random() * pageArray.length)];
+
     //fetch array of tv shows from Movie DB API using genreId variable
     axios.get('https://api.themoviedb.org/3/discover/tv?' +
         'api_key=' + process.env.MOVIE_DB_API_KEY + '&language=en-' +
-        'US&sort_by=popularity.desc&page=1&with_genres=' + genreId)
+        'US&sort_by=popularity.desc&page=' + page + '&with_genres=' + genreId)
         .then(response => {
             res.status(200).json({response: response.data});
         })
